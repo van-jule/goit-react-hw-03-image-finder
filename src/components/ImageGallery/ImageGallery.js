@@ -1,19 +1,16 @@
 import { ImageGalleryItem } from "../ImageGalleryItem/ImageGalleryItem";
-// import ImageApi from "../services/pixabay";
 import styles from "./ImageGallery.module.css";
 
-export default function ImageStateCar({ images: { hits } }) {
-  console.log(hits);
-
-  const imagesList = hits;
-
+export default function ImageGallery({ images, onClick }) {
   return (
     <ul className={styles.gallery}>
-      {imagesList.map((image) => (
+      {images.map((image, index) => (
         <ImageGalleryItem
-          id={image.id}
+          key={image.id}
           src={image.webformatURL}
           alt={image.tags}
+          index={index}
+          onClick={onClick}
         />
       ))}
     </ul>
