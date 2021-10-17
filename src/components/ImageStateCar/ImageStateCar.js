@@ -63,11 +63,13 @@ class ImageStateCar extends Component {
       .catch((error) => this.setState({ error, status: Status.REJECTED }));
   };
 
-  closeModal = () => {
+  closeModal = (event) => {
     console.log(this.state.scrollHeight);
-    this.setState({
-      openModal: false,
-    });
+    if (event.currentTarget === event.target) {
+      this.setState({
+        openModal: false,
+      });
+    }
   };
 
   render() {
