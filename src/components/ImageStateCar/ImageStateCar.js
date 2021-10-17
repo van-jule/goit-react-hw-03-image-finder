@@ -17,6 +17,7 @@ class ImageStateCar extends Component {
     openModalIndex: undefined,
     status: Status.IDLE,
     scrollHeight: 0,
+    totalPages: null,
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -28,10 +29,11 @@ class ImageStateCar extends Component {
 
       setTimeout(() => {
         ImageApi.fetchImages(nextValue)
-          .then((images) => {
+          .then(({ images, totalPages }) => {
             this.setState({
               images,
               status: images.length > 0 ? Status.RESOLVED : Status.REJECTED,
+              totalPages,
             });
           })
           .catch((error) => this.setState({ error, status: Status.REJECTED }));
@@ -50,7 +52,7 @@ class ImageStateCar extends Component {
     const { page } = this.state;
 
     ImageApi.fetchImages(this.props.queryValue, page + 1)
-      .then((images) => {
+      .then(({ images }) => {
         this.setState((prevState) => ({
           images: [...prevState.images, ...images],
           status: Status.RESOLVED,
@@ -69,7 +71,8 @@ class ImageStateCar extends Component {
   };
 
   render() {
-    const { images, status, openModal, openModalIndex } = this.state;
+    const { images, status, openModal, openModalIndex, totalPages } =
+      this.state;
 
     if (status === "idle") {
       return <p className={styles.text}>Введите Ваш запрос</p>;
@@ -90,7 +93,9 @@ class ImageStateCar extends Component {
             images={images}
             onClick={(modalOpen) => this.setState(modalOpen)}
           />
-          {images.length > 0 && <Button onClick={this.loadMore} />}
+          {images.length > 0 && totalPages > 1 && (
+            <Button onClick={this.loadMore} />
+          )}
 
           {openModal && (
             <Modal
