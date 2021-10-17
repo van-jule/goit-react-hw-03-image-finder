@@ -8,7 +8,7 @@ class Searchbar extends Component {
     value: "",
   };
   handleChange = (event) => {
-    this.setState({ value: event.currentTarget.value.toLowerCase().trim() });
+    this.setState({ value: event.currentTarget.value.toLowerCase() });
   };
 
   handleSubmit = (event) => {
@@ -20,7 +20,7 @@ class Searchbar extends Component {
       return toast.error("Введите Ваш запрос");
     }
 
-    this.props.onSubmit(value);
+    this.props.onSubmit(value.trim());
     this.setState({ value: "" });
   };
 
