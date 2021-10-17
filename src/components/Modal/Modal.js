@@ -26,7 +26,11 @@ class Modal extends Component {
     return createPortal(
       <div className={styles.overlay} onClick={closeModal}>
         <div className={styles.modal}>
-          <img src={image.largeImageURL} alt={image.tags} />
+          <img
+            className={styles.image}
+            src={image.largeImageURL}
+            alt={image.tags}
+          />
         </div>
       </div>,
       modalRoot
