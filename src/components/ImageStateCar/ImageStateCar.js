@@ -1,5 +1,6 @@
 import { Component } from "react";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
+import styles from "./ImageStateCar.module.css";
 import ImageGallery from "../ImageGallery/ImageGallery";
 import UserLoader from "../UserLoader/UserLoader";
 import ImageApi from "../services/pixabay";
@@ -59,14 +60,17 @@ class ImageStateCar extends Component {
   };
 
   closeModal = () => {
-    this.setState({ openModal: false });
+    console.log(this.state.scrollHeight);
+    this.setState({
+      openModal: false,
+    });
   };
 
   render() {
     const { images, status, openModal, openModalIndex } = this.state;
 
     if (status === "idle") {
-      return <p>Введите Ваш запрос</p>;
+      return <p className={styles.text}>Введите Ваш запрос</p>;
     }
 
     if (status === "pending") {
@@ -74,7 +78,7 @@ class ImageStateCar extends Component {
     }
 
     if (status === "rejected") {
-      return <ImageError message="По вашему запросу ничего не найдено" />;
+      return <ImageError />;
     }
 
     if (status === "resolved") {
