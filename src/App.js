@@ -4,17 +4,19 @@ import Searchbar from "./components/Searchbar";
 import ImageStateCar from "./components/ImageStateCar";
 class App extends Component {
   state = {
-    imageValue: "",
+    queryValue: "",
   };
 
-  handleFormSubmit = (formValue) => this.setState({ imageValue: formValue });
+  handleFormSubmit = (queryValue) => this.setState({ queryValue });
 
   render() {
+    const { queryValue } = this.state;
+    const { handleFormSubmit } = this;
+
     return (
       <div className="App">
-        {this.state.loading && <h1>Загружаем...</h1>}
-        <Searchbar onSubmit={this.handleFormSubmit} />
-        <ImageStateCar imageValue={this.state.imageValue} />
+        <Searchbar onSubmit={handleFormSubmit} />
+        <ImageStateCar queryValue={queryValue} />
       </div>
     );
   }

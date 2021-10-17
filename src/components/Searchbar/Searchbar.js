@@ -1,41 +1,45 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { toast } from "react-toastify";
-
-// import { ReactComponent as MyIcon } from "";
+import styles from "./Searchbar.module.css";
 
 class Searchbar extends Component {
   state = {
     value: "",
   };
   handleChange = (event) => {
-    this.setState({ value: event.currentTarget.value.toLowerCase() });
+    this.setState({ value: event.currentTarget.value.toLowerCase().trim() });
   };
 
   handleSubmit = (event) => {
     event.preventDefault();
 
-    if (this.state.value.trim() === "") {
-      return toast.error("Введи что-то нормальное, а не вот это вот всё!");
+    const { value } = this.state;
+
+    if (!value) {
+      return toast.error("Введите Ваш запрос");
     }
 
-    this.props.onSubmit(this.state.value);
+    this.props.onSubmit(value);
     this.setState({ value: "" });
   };
 
   render() {
+    const { value } = this.state;
+
     return (
-      <header className="Searchbar">
-        <form className="SearchForm" onSubmit={this.handleSubmit}>
-          <button type="submit" className="SearchForm-button">
-            <span className="SearchForm-button-label">Search</span>
+      <header className={styles.searchbar}>
+        <form className={styles.searchForm} onSubmit={this.handleSubmit}>
+          <button type="submit" className={styles.searchFormButton}>
+            <span className={styles.searchFormButtonLabel}>Search</span>
           </button>
 
           <input
-            className="SearchForm-input"
+            className={styles.searchFormInput}
             type="text"
-            value={this.state.value}
-            autocomplete="off"
-            autofocus
+            value={value}
+            autoComplete="off"
+            autoFocus
             placeholder="Search images and photos"
             onChange={this.handleChange}
           />
@@ -44,4 +48,13 @@ class Searchbar extends Component {
     );
   }
 }
+
+Searchbar.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+};
+
+Searchbar.defaultProps = {
+  onSubmit: () => {},
+};
+
 export default Searchbar;

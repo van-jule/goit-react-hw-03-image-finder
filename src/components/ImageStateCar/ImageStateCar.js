@@ -1,57 +1,42 @@
 import { Component } from "react";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
-import Loader from "react-loader-spinner";
-// import { toast } from "react-toastify";
 import ImageGallery from "../ImageGallery/ImageGallery";
+import UserLoader from "../UserLoader/UserLoader";
 import ImageApi from "../services/pixabay";
 import ImageError from "./ImageError";
-
-const Status = {
-  IDLE: "idle",
-  PENDING: "pending",
-  RESOLVED: "resolved",
-  REJECTED: "rejected",
-};
+import Status from "../services/status";
+import Button from "../Button";
+import Modal from "../Modal";
 
 class ImageStateCar extends Component {
   state = {
     images: null,
-    error: null,
-    status: Status.IDLE,
+    page: 1,
     openModal: false,
     openModalIndex: undefined,
-    page: 1,
+    status: Status.IDLE,
     scrollHeight: 0,
   };
 
-  componentDidUpdate(prevProps, prevState) {
-    const prevValue = prevProps.imageValue;
-    const nextValue = this.props.imageValue;
+  componentDidUpdate(prevProps) {
+    const prevValue = prevProps.queryValue;
+    const nextValue = this.props.queryValue;
 
     if (prevValue !== nextValue) {
       this.setState({ status: Status.PENDING, page: 1, scrollHeight: 0 });
 
-      // if (this.state.images.length < 1) {
-      //   this.setState({ status: Status.REJECTED });
-      // }
-
-      // setTimeout(() => {
-      //   ImageApi.fetchImages(nextValue)
-      //     .then((images) => this.setState({ images, status: Status.RESOLVED }))
-      //     .catch((error) => this.setState({ error, status: Status.REJECTED }));
-      // }, 2000);
-
       setTimeout(() => {
         ImageApi.fetchImages(nextValue)
-          .then(({ hits }) => {
+          .then((images) => {
             this.setState({
-              images: hits,
-              status: hits.length > 0 ? Status.RESOLVED : Status.REJECTED,
+              images,
+              status: images.length > 0 ? Status.RESOLVED : Status.REJECTED,
             });
           })
           .catch((error) => this.setState({ error, status: Status.REJECTED }));
       }, 500);
     }
+
     window.scrollTo({
       top: this.state.scrollHeight,
       behavior: "smooth",
@@ -61,43 +46,35 @@ class ImageStateCar extends Component {
   loadMore = () => {
     const { page } = this.state;
 
-    ImageApi.fetchImages(this.props.imageValue, page + 1)
-      .then(({ hits }) => {
+    ImageApi.fetchImages(this.props.queryValue, page + 1)
+      .then((images) => {
         this.setState((prevState) => ({
-          images: [...prevState.images, ...hits],
+          images: [...prevState.images, ...images],
           status: Status.RESOLVED,
-          scrollHeight: document.body.scrollHeight - 150,
+          scrollHeight: document.documentElement.scrollHeight - 150,
           page: page + 1,
         }));
       })
       .catch((error) => this.setState({ error, status: Status.REJECTED }));
   };
 
+  closeModal = () => {
+    this.setState({ openModal: false });
+  };
+
   render() {
-    const { images, error, status, openModal, openModalIndex } = this.state;
-    const { imageValue } = this.props;
+    const { images, status, openModal, openModalIndex } = this.state;
 
     if (status === "idle") {
-      // return toast("Введите Ваш запрос");
       return <p>Введите Ваш запрос</p>;
     }
 
     if (status === "pending") {
-      //   return <PokemonPendingView imageValue={imageValue} />;
-      // return <div>ожидаю...</div>;
-      return (
-        <Loader
-          type="Puff"
-          color="#00BFFF"
-          height={100}
-          width={100}
-          timeout={3000}
-        />
-      );
+      return <UserLoader />;
     }
 
     if (status === "rejected") {
-      return <ImageError message="По вашему запросу ничего не найдено" />; //{error.message}
+      return <ImageError message="По вашему запросу ничего не найдено" />;
     }
 
     if (status === "resolved") {
@@ -105,32 +82,15 @@ class ImageStateCar extends Component {
         <>
           <ImageGallery
             images={images}
-            onClick={(newData) => {
-              console.log("click po state", newData);
-              this.setState(newData);
-            }}
+            onClick={(modalOpen) => this.setState(modalOpen)}
           />
-          {images.length > 0 && (
-            <button type="button" onClick={this.loadMore}>
-              Load more....
-            </button>
-          )}
+          {images.length > 0 && <Button onClick={this.loadMore} />}
 
           {openModal && (
-            <div
-              className="Overlay"
-              onKeyPress={(e) => {}}
-              onClick={() => this.setState({ openModal: false })}
-            >
-              <div className="Modal">
-                {console.log(images, openModalIndex)}
-
-                <img
-                  src={images[openModalIndex].largeImageURL}
-                  alt={images[openModalIndex].tags}
-                />
-              </div>
-            </div>
+            <Modal
+              closeModal={this.closeModal}
+              image={images[openModalIndex]}
+            />
           )}
         </>
       );
