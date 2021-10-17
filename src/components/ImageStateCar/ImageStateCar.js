@@ -19,7 +19,7 @@ class ImageStateCar extends Component {
     scrollHeight: 0,
   };
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     const prevValue = prevProps.queryValue;
     const nextValue = this.props.queryValue;
 
@@ -38,10 +38,12 @@ class ImageStateCar extends Component {
       }, 500);
     }
 
-    window.scrollTo({
-      top: this.state.scrollHeight,
-      behavior: "smooth",
-    });
+    if (prevState.openModal === this.state.openModal) {
+      window.scrollTo({
+        top: this.state.scrollHeight,
+        behavior: "smooth",
+      });
+    }
   }
 
   loadMore = () => {
