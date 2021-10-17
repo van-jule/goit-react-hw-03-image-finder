@@ -5,7 +5,7 @@ function fetchImages(value, page) {
     `${BASE_URL}?q=${value}&page=${page}&key=${API_KEY}&image_type=photo&orientation=horizontal&per_page=12`
   )
     .then((response) => response.json())
-    .then((data) => ({ images: data.hits, totalPages: data.totalHits }));
+    .then((data) => ({ images: data.hits, totalHits: data.totalHits }));
 }
 
 const api = {
